@@ -1,18 +1,32 @@
 import { clsxm } from "@/utils";
 import { getTextBlockStyle, toggleBlockType } from "@/utils/EditorUtils";
 import { Menu } from "@headlessui/react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSlateStatic } from "slate-react";
 
-const PARAGRAPH_STYLES = ["h1", "h2", "h3", "h4", "paragraph", "multiple"];
+const BLOCK_STYLES = [
+  { name: "h1", label: "Heading 1" },
+  { name: "h2", label: "Heading 2" },
+  { name: "h3", label: "Heading 3" },
+  { name: "h4", label: "Heading 4" },
+  { name: "paragraph", label: "Paragraph" },
+  { name: "multiple", label: "Multiple" },
+];
+
+type Option = { name: string; label: string };
 
 const ElementDropdown = () => {
   const editor = useSlateStatic();
+  // const [selected, setSelected] = useState<Option>({
+  //   name: "paragraph",
+  //   label: "Paragraph",
+  // });
 
   const handleClick = useCallback(
-    (targetType: string) => {
-      if (targetType === "multiple") return;
-      toggleBlockType(editor, targetType);
+    (targetType: Option) => {
+      if (targetType.name === "multiple") return;
+      // setSelected(targetType);
+      toggleBlockType(editor, targetType.name);
     },
     [editor]
   );
@@ -26,10 +40,10 @@ const ElementDropdown = () => {
           {getLabelForBlockStyle(blockType ?? "paragraph")}
         </Menu.Button>
         <Menu.Items className={"flex flex-col absolute top-8 left-0 z-10"}>
-          {PARAGRAPH_STYLES.map((style) => (
+          {BLOCK_STYLES.map((style) => (
             <Menu.Item
               as="div"
-              key={style}
+              key={style.name}
               className={clsxm(
                 "ui-active:text-base ui-not-active:italic",
                 "duration-500 hover:cursor-pointer",
@@ -37,7 +51,8 @@ const ElementDropdown = () => {
               )}
               onClick={() => handleClick(style)}
             >
-              {getLabelForBlockStyle(style)}
+              {style.label}
+              {/* {getLabelForBlockStyle(style)} */}
             </Menu.Item>
           ))}
         </Menu.Items>

@@ -14,7 +14,6 @@ export type FormattedText = {
   "align-center"?: true;
   "bulleted-list"?: true;
   "numbered-list"?: true;
-  //   type?: string;
 };
 export type CustomText = FormattedText;
 
@@ -23,6 +22,7 @@ declare module "slate" {
     type: string;
   }
   export interface Node extends BaseElement {
+    selected: boolean;
     type: string;
   }
   export interface BaseEditor {
