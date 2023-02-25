@@ -6,35 +6,38 @@ export function getActiveStyles(editor: BaseEditor) {
 
 export function getTextBlockStyle(editor: BaseEditor) {
   const selection = editor.selection;
+
   if (selection == null) {
     return null;
   }
+  // gives the forward-direction points in case the selection was
+  // was backwards.
+  const [start, end] = Range.edges(selection);
 
-  const topLevelBlockNodesInSelection = Editor.nodes(editor, {
-    at: editor.selection ?? undefined,
-    mode: "highest",
-    match: (n) => Editor.isBlock(editor, n),
-  });
+  //path[0] gives us the index of the top-level block.
+  let startTopLevelBlockIndex = start.path[0];
+  const endTopLevelBlockIndex = end.path[0];
 
   let blockType = null;
-  let nodeEntry = topLevelBlockNodesInSelection.next();
-  while (!nodeEntry.done) {
-    const [node] = nodeEntry.value;
+  while (startTopLevelBlockIndex <= endTopLevelBlockIndex) {
+    const [node, _] = Editor.node(editor, [startTopLevelBlockIndex]);
     if (blockType == null) {
+      console.log(node.type);
       blockType = node.type;
     } else if (blockType !== node.type) {
       return "multiple";
     }
-
-    nodeEntry = topLevelBlockNodesInSelection.next();
+    startTopLevelBlockIndex++;
   }
 
-  return blockType !== "image" ? blockType : null;
+  return blockType;
 }
 
 export function toggleBlockType(editor: BaseEditor, blockType: string) {
   const currentBlockType = getTextBlockStyle(editor);
+  console.log({ currentBlockType, blockType });
   const changeTo = currentBlockType === blockType ? "paragraph" : blockType;
+  console.log({ selection: editor.selection, changeTo });
   Transforms.setNodes(
     editor,
     { type: changeTo },

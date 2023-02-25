@@ -29,7 +29,7 @@ export default function Editor({ document, onChange = () => {} }: Props) {
 
   return (
     <div className={"px-4"}>
-      <Slate editor={editor} value={document} onChange={onChange}>
+      <Slate editor={editor} value={document} onChange={onChangeHandler}>
         <Toolbar selection={selection} />
         <Editable
           renderElement={renderElement}
